@@ -23,12 +23,8 @@
       max-width: 380px;
       text-align: center;
       box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-      transition: border-top 0.3s;
       border-top: 10px solid #6a11cb;
-    }
-
-    h2 {
-      margin-top: 0;
+      transition: border-top-color 0.3s;
     }
 
     #story {
@@ -55,25 +51,10 @@
       background: linear-gradient(135deg, #ff512f, #dd2476);
     }
 
-    .add-area {
-      margin-top: 25px;
-      text-align: left;
+    .music-btn {
+      margin-top: 15px;
       font-size: 14px;
-    }
-
-    .add-area input,
-    .add-area select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 6px;
-      margin-bottom: 6px;
-      box-sizing: border-box;
-    }
-
-    .add-area button {
-      width: 100%;
-      font-size: 14px;
-      background: #4CAF50;
+      background: #607D8B;
     }
   </style>
 </head>
@@ -86,21 +67,18 @@
 
   <button id="startBtn">開始</button>
   <button id="againBtn">再來一次</button>
-
-  <div class="add-area">
-    <hr>
-    <div>新增詞語：</div>
-    <select id="type">
-      <option value="subjectAdj">主詞形容詞</option>
-      <option value="subject">主詞</option>
-      <option value="place">地點</option>
-      <option value="mood">心情</option>
-      <option value="verb">動詞</option>
-    </select>
-    <input type="text" id="newWord" placeholder="輸入你想加的詞">
-    <button id="addBtn">加入詞語</button>
-  </div>
+  <button id="musicBtn" class="music-btn">🔊 關閉音樂</button>
 </div>
+
+<!-- 🎵 背景音樂 -->
+<audio id="bgm" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9e02c64d4b.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 🔊 點擊音效 -->
+<audio id="clickSound">
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0e8f0d4f6a.mp3" type="audio/mpeg">
+</audio>
 
 <script>
   const data = {
@@ -125,6 +103,12 @@
   const card = document.getElementById("card");
   const startBtn = document.getElementById("startBtn");
   const againBtn = document.getElementById("againBtn");
+  const musicBtn = document.getElementById("musicBtn");
+
+  const bgm = document.getElementById("bgm");
+  const clickSound = document.getElementById("clickSound");
+
+  let musicOn = true;
 
   function random(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -141,6 +125,9 @@
   }
 
   function generateStory() {
+    clickSound.currentTime = 0;
+    clickSound.play();
+
     const mood = random(data.mood);
     const sentence =
       random(data.subjectAdj) +
@@ -154,19 +141,25 @@
 
     startBtn.style.display = "none";
     againBtn.style.display = "block";
+
+    // 使用者第一次互動後，才播放背景音樂（瀏覽器規定）
+    if (bgm.paused && musicOn) {
+      bgm.play();
+    }
   }
 
   startBtn.onclick = generateStory;
   againBtn.onclick = generateStory;
 
-  document.getElementById("addBtn").onclick = () => {
-    const type = document.getElementById("type").value;
-    const word = document.getElementById("newWord").value.trim();
-    if (word) {
-      data[type].push(word);
-      document.getElementById("newWord").value = "";
-      alert("已加入！");
+  musicBtn.onclick = () => {
+    if (musicOn) {
+      bgm.pause();
+      musicBtn.textContent = "🔈 開啟音樂";
+    } else {
+      bgm.play();
+      musicBtn.textContent = "🔊 關閉音樂";
     }
+    musicOn = !musicOn;
   };
 </script>
 
