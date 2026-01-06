@@ -3,98 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <title>隨機說故事</title>
+
   <style>
     body {
-      font-family: "Noto Sans TC", sans-serif;
-      background-color: #f5f5f5;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      font-family: "Noto Sans TC", Arial, sans-serif;
     }
 
-    .container {
+    .card {
       background: white;
-      padding: 30px;
-      border-radius: 12px;
+      padding: 28px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 380px;
       text-align: center;
-      width: 320px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      transition: border-top 0.3s;
+      border-top: 10px solid #6a11cb;
+    }
+
+    h2 {
+      margin-top: 0;
     }
 
     #story {
-      font-size: 18px;
+      font-size: 20px;
+      min-height: 80px;
+      line-height: 1.6;
       margin: 20px 0;
-      min-height: 60px;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 16px;
+      width: 160px;
+      padding: 12px 0;
       border: none;
-      border-radius: 8px;
+      border-radius: 999px;
+      font-size: 16px;
       cursor: pointer;
-      background-color: #4CAF50;
       color: white;
-    }
-
-    button:hover {
-      background-color: #45a049;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      margin-top: 10px;
     }
 
     #againBtn {
       display: none;
-      margin-top: 10px;
-      background-color: #2196F3;
+      background: linear-gradient(135deg, #ff512f, #dd2476);
     }
 
-    #againBtn:hover {
-      background-color: #1e88e5;
+    .add-area {
+      margin-top: 25px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .add-area input,
+    .add-area select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+      box-sizing: border-box;
+    }
+
+    .add-area button {
+      width: 100%;
+      font-size: 14px;
+      background: #4CAF50;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>隨機說故事</h2>
+<div class="card" id="card">
+  <h2>🎲 隨機說故事</h2>
 
-    <div id="story"></div>
+  <div id="story"></div>
 
-    <button id="startBtn">開始</button>
-    <button id="againBtn">再來一次</button>
+  <button id="startBtn">開始</button>
+  <button id="againBtn">再來一次</button>
+
+  <div class="add-area">
+    <hr>
+    <div>新增詞語：</div>
+    <select id="type">
+      <option value="subjectAdj">主詞形容詞</option>
+      <option value="subject">主詞</option>
+      <option value="place">地點</option>
+      <option value="mood">心情</option>
+      <option value="verb">動詞</option>
+    </select>
+    <input type="text" id="newWord" placeholder="輸入你想加的詞">
+    <button id="addBtn">加入詞語</button>
   </div>
+</div>
 
-  <script>
-    const subjectAdj = ["美麗的", "很大的", "好吃的", "高挑的", "扭曲的", "猥瑣的"," 五彩繽紛的"];
-    const subject = ["小明", "河馬", "東方明珠塔", "恐龍", "土豆先生", "薑母鴨","王剛"];
-    const place = ["在河邊", "在懸崖上", "在馬桶旁", "在婚禮現場", "在天花板上", "在教室裡","在他媽的房間"];
-    const mood = ["快樂的", "崩潰的", "瘋狂的", "如釋重負的", "放心的", "哀傷的"];
-    const verb = ["上廁所", "舞動", "劈腿", "煮飯", "洗澡", "刷抖音","大快朵頤"];
+<script>
+  const data = {
+    subjectAdj: ["美麗的","很大的","好吃的","高挑的","扭曲的","猥瑣的","五彩繽紛的"],
+    subject: ["小明","河馬","東方明珠塔","恐龍","土豆先生","薑母鴨","王剛"],
+    place: ["在河邊","在懸崖上","在馬桶旁","在婚禮現場","在天花板上","在教室裡","在他媽的房間裡"],
+    mood: ["快樂的","崩潰的","瘋狂的","如釋重負的","放心的","哀傷的","興奮的"],
+    verb: ["上廁所","舞動","劈腿","煮飯","洗澡","刷抖音","大快朵頤"]
+  };
 
-    const storyDiv = document.getElementById("story");
-    const startBtn = document.getElementById("startBtn");
-    const againBtn = document.getElementById("againBtn");
+  const moodColor = {
+    "快樂的": "#4CAF50",
+    "興奮的": "#FF9800",
+    "瘋狂的": "#9C27B0",
+    "崩潰的": "#F44336",
+    "哀傷的": "#607D8B",
+    "如釋重負的": "#03A9F4",
+    "放心的": "#009688"
+  };
 
-    function randomPick(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
+  const storyDiv = document.getElementById("story");
+  const card = document.getElementById("card");
+  const startBtn = document.getElementById("startBtn");
+  const againBtn = document.getElementById("againBtn");
+
+  function random(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function typeWriter(text) {
+    storyDiv.textContent = "";
+    let i = 0;
+    const timer = setInterval(() => {
+      storyDiv.textContent += text[i];
+      i++;
+      if (i >= text.length) clearInterval(timer);
+    }, 50);
+  }
+
+  function generateStory() {
+    const mood = random(data.mood);
+    const sentence =
+      random(data.subjectAdj) +
+      random(data.subject) +
+      random(data.place) +
+      mood +
+      random(data.verb);
+
+    typeWriter(sentence);
+    card.style.borderTopColor = moodColor[mood] || "#6a11cb";
+
+    startBtn.style.display = "none";
+    againBtn.style.display = "block";
+  }
+
+  startBtn.onclick = generateStory;
+  againBtn.onclick = generateStory;
+
+  document.getElementById("addBtn").onclick = () => {
+    const type = document.getElementById("type").value;
+    const word = document.getElementById("newWord").value.trim();
+    if (word) {
+      data[type].push(word);
+      document.getElementById("newWord").value = "";
+      alert("已加入！");
     }
-
-    function generateStory() {
-      const sentence =
-        randomPick(subjectAdj) +
-        randomPick(subject) +
-        randomPick(place) +
-        randomPick(mood) +
-        randomPick(verb);
-
-      storyDiv.textContent = sentence;
-      startBtn.style.display = "none";
-      againBtn.style.display = "inline-block";
-    }
-
-    startBtn.addEventListener("click", generateStory);
-    againBtn.addEventListener("click", generateStory);
-  </script>
+  };
+</script>
 
 </body>
 </html>
