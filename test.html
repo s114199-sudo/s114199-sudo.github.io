@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>隨機說故事</title>
+  <style>
+    body {
+      font-family: "Noto Sans TC", sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      width: 320px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    #story {
+      font-size: 18px;
+      margin: 20px 0;
+      min-height: 60px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #againBtn {
+      display: none;
+      margin-top: 10px;
+      background-color: #2196F3;
+    }
+
+    #againBtn:hover {
+      background-color: #1e88e5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>隨機說故事</h2>
+
+    <div id="story"></div>
+
+    <button id="startBtn">開始</button>
+    <button id="againBtn">再來一次</button>
+  </div>
+
+  <script>
+    const subjectAdj = ["美麗的", "很大的", "好吃的", "高挑的", "扭曲的", "猥瑣的"];
+    const subject = ["小明", "河馬", "東方明珠塔", "恐龍", "土豆先生", "薑母鴨"];
+    const place = ["在河邊", "在懸崖上", "在馬桶旁", "在婚禮現場", "在天花板上", "在教室裡"];
+    const mood = ["快樂的", "崩潰的", "瘋狂的", "如釋重負的", "放心的", "哀傷的"];
+    const verb = ["上廁所", "舞動", "劈腿", "煮飯", "洗澡", "刷抖音"];
+
+    const storyDiv = document.getElementById("story");
+    const startBtn = document.getElementById("startBtn");
+    const againBtn = document.getElementById("againBtn");
+
+    function randomPick(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generateStory() {
+      const sentence =
+        randomPick(subjectAdj) +
+        randomPick(subject) +
+        randomPick(place) +
+        randomPick(mood) +
+        randomPick(verb);
+
+      storyDiv.textContent = sentence;
+      startBtn.style.display = "none";
+      againBtn.style.display = "inline-block";
+    }
+
+    startBtn.addEventListener("click", generateStory);
+    againBtn.addEventListener("click", generateStory);
+  </script>
+
+</body>
+</html>
