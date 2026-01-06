@@ -52,9 +52,28 @@
     }
 
     .music-btn {
-      margin-top: 15px;
-      font-size: 14px;
       background: #607D8B;
+      font-size: 14px;
+    }
+
+    .add-area {
+      margin-top: 20px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .add-area input,
+    .add-area select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .add-area button {
+      width: 100%;
+      background: #4CAF50;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -68,15 +87,29 @@
   <button id="startBtn">開始</button>
   <button id="againBtn">再來一次</button>
   <button id="musicBtn" class="music-btn">🔊 關閉音樂</button>
+
+  <div class="add-area">
+    <hr>
+    <div>新增詞語：</div>
+    <select id="type">
+      <option value="subjectAdj">主詞形容詞</option>
+      <option value="subject">主詞</option>
+      <option value="place">地點</option>
+      <option value="mood">心情</option>
+      <option value="verb">動詞</option>
+    </select>
+    <input type="text" id="newWord" placeholder="輸入你想加的詞">
+    <button id="addBtn">加入詞語</button>
+  </div>
 </div>
 
 <!-- 🎵 背景音樂 -->
-<audio id="bgm" loop>
+<audio id="bgm" loop preload="auto">
   <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9e02c64d4b.mp3" type="audio/mpeg">
 </audio>
 
 <!-- 🔊 點擊音效 -->
-<audio id="clickSound">
+<audio id="clickSound" preload="auto">
   <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0e8f0d4f6a.mp3" type="audio/mpeg">
 </audio>
 
@@ -109,6 +142,7 @@
   const clickSound = document.getElementById("clickSound");
 
   let musicOn = true;
+  let musicStarted = false;
 
   function random(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -125,8 +159,15 @@
   }
 
   function generateStory() {
+    // 點擊音效
     clickSound.currentTime = 0;
     clickSound.play();
+
+    // 第一次互動時，啟動背景音樂（關鍵修正）
+    if (!musicStarted && musicOn) {
+      bgm.play();
+      musicStarted = true;
+    }
 
     const mood = random(data.mood);
     const sentence =
@@ -141,11 +182,6 @@
 
     startBtn.style.display = "none";
     againBtn.style.display = "block";
-
-    // 使用者第一次互動後，才播放背景音樂（瀏覽器規定）
-    if (bgm.paused && musicOn) {
-      bgm.play();
-    }
   }
 
   startBtn.onclick = generateStory;
@@ -160,6 +196,16 @@
       musicBtn.textContent = "🔊 關閉音樂";
     }
     musicOn = !musicOn;
+  };
+
+  document.getElementById("addBtn").onclick = () => {
+    const type = document.getElementById("type").value;
+    const word = document.getElementById("newWord").value.trim();
+    if (word) {
+      data[type].push(word);
+      document.getElementById("newWord").value = "";
+      alert("已加入辭庫！");
+    }
   };
 </script>
 
